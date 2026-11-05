@@ -1,0 +1,41 @@
+name: Render RR Brothers Website Shorts Ad
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "generate_website_ad.py"
+      - ".github/workflows/render-website-ad.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install rendering dependencies
+        run: python -m pip install --upgrade pip pillow numpy imageio-ffmpeg
+
+      - name: Render cinematic website advertisement
+        run: python generate_website_ad.py
+
+      - name: Upload MP4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rr-brothers-website-shorts
+          path: RR-Brothers-Website-Ad.mp4
+          retention-days: 30
+
+      - name: Save MP4 in repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add RR-Brothers-Website-Ad.mp4
+          git commit -m "Render RR Brothers website advertisement"
+          git push

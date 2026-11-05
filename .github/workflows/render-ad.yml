@@ -3,8 +3,8 @@ name: Render RR Brothers Shorts Ad
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "RR-Brothers-Shorts.mp4"
+    paths:
+      - "generate_ad.py"
   workflow_dispatch:
 
 permissions:

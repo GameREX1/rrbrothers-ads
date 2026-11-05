@@ -59,8 +59,8 @@ def make_bg(seed):
         d.ellipse((x-r,y-r,x+r,y+r), fill=(229,194,126,random.randint(20,65)))
     return im
 
-def fit_inside(source, box, background=(244,239,229)):
-    x,y,w,h=box
+def fit_inside(source, size, background=(244,239,229)):
+    w,h=size
     im=Image.new("RGB",(w,h),background)
     src=source.convert("RGB").copy()
     src.thumbnail((w-30,h-30), Image.Resampling.LANCZOS)

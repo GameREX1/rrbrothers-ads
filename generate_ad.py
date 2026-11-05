@@ -2,7 +2,10 @@
 """Render a vertical RR Brothers product advertisement from the repository images."""
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance
 import numpy as np
+import imageio_ffmpeg
 import wave, subprocess, os, math, random
+
+FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
 W, H = 1080, 1920
 FPS = 30
@@ -188,7 +191,7 @@ def main():
     make_audio("ambient.wav",duration)
     for i in range(1,6):
         cmd=[
-            "ffmpeg","-y","-hide_banner","-loglevel","error",
+            FFMPEG,"-y","-hide_banner","-loglevel","error",
             "-loop","1","-framerate",str(FPS),"-i",f"scene-{i}.png",
             "-t",str(SCENE_SECONDS),
             "-vf",f"zoompan=z='min(1.055,1+0.00035*on)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={W}x{H}:fps={FPS},format=yuv420p",
@@ -205,13 +208,13 @@ def main():
         f"[v3][4:v]xfade=transition=fade:duration={XFADE}:offset=13.00,format=yuv420p[v]"
     )
     subprocess.run([
-        "ffmpeg","-y","-hide_banner","-loglevel","error",*inputs,
+        FFMPEG,"-y","-hide_banner","-loglevel","error",*inputs,
         "-filter_complex",fc,"-map","[v]","-r",str(FPS),
         "-c:v","libx264","-preset","medium","-crf","19",
         "-pix_fmt","yuv420p","-movflags","+faststart","video-silent.mp4"
     ],check=True)
     subprocess.run([
-        "ffmpeg","-y","-hide_banner","-loglevel","error",
+        FFMPEG,"-y","-hide_banner","-loglevel","error",
         "-i","video-silent.mp4","-i","ambient.wav",
         "-map","0:v:0","-map","1:a:0","-c:v","copy",
         "-c:a","aac","-b:a","160k","-shortest","-movflags","+faststart",OUT
